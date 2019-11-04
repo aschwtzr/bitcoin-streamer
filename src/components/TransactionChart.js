@@ -4,7 +4,7 @@ import { LineChart, Line, XAxis, YAxis, Label, ResponsiveContainer } from 'recha
 function TransactionChart (props) {
   return (
     <React.Fragment>
-      <header>Transactions</header>
+      <header>Average Transaction Value per Ten Seconds</header>
       <ResponsiveContainer height={ 500 }>
         <LineChart
           data={props.data}
@@ -18,7 +18,7 @@ function TransactionChart (props) {
           <XAxis dataKey="time" />
           <YAxis>
             <Label angle={270} position="left" style={{ textAnchor: 'middle' }}>
-              Sales ($)
+              BTC
             </Label>
           </YAxis>
           <Line type="monotone" dataKey="amount" stroke="#556CD6" dot={false} />

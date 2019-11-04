@@ -6,7 +6,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 
-function Header(props) {
+function TransactionListHeader(props) {
   const [currency, setCurrency] = useState('USD');
   // const inputLabel = React.useRef(null);
 
@@ -22,7 +22,7 @@ function Header(props) {
   })
 
   return (
-    <div>
+    <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', paddingLeft: '5rem'}}>
       <FormControl>
         <InputLabel id='currency-picker'>Currency</InputLabel>
         <Select
@@ -38,4 +38,4 @@ function Header(props) {
   );
 }
 
-export default Header; 
+export default TransactionListHeader; 

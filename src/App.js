@@ -33,11 +33,15 @@ class App extends React.Component {
   addTransactionToList (transaction) {
     const prevTx = this.state.transactions
     const transactions = [ transaction, ...prevTx ]
+    // splice the transactions if the list grows too long
+    if (transactions.lenght > 400) {
+      transactions.splice(400)
+    }
     this.setState({transactions})
   }
 
   transactionsList () {
-    const lastPrice = this.currentCurrency().last //this.state.conversionRates ? this.state.conversionRates[this.state.selectedCurrKey].last : 0
+    const lastPrice = this.currentCurrency().last
 
     const mappedTransactions = this.state.transactions.map(transaction => {
       return { ...transaction, total: transaction.value * lastPrice}
@@ -53,9 +57,26 @@ class App extends React.Component {
   }
 
   transactionChart () {
-    const transactionChartData = this.state.transactions.map(transaction => {
-      return { time: transaction.timestamp, amount: transaction.value}
+    const reducedTransactions = this.state.transactions.reduce((prev, curr) => {
+      const minuteMark = curr.timestamp.slice(-5).slice(0, 4)
+      console.log(curr.timestamp)
+      if (prev[minuteMark]) {
+        prev[minuteMark].totalValue += curr.value
+        prev[minuteMark].totalTransactions += 1
+      } else {
+        prev[minuteMark] = {
+          timestamp: `${curr.timestamp.slice(0,  curr.timestamp.length - 1)}0`,
+          totalValue: curr.value,
+          totalTransactions: 1
+        }
+      }
+      return prev
+    }, {})
+
+    const transactionChartData = Object.values(reducedTransactions).map(minute => {
+      return { time: minute.timestamp, amount: minute.totalValue / minute.totalTransactions}
     });
+    console.log(transactionChartData)
     return <TransactionChart data={ transactionChartData }/>
   }
 
@@ -65,7 +86,7 @@ class App extends React.Component {
   }
 
   async componentDidMount() {
-    // Load async data.
+    // load currency ticker
     fetchBTCPrice().then(res => {
       const conversionRates = res.data
       this.setState({ conversionRates })
@@ -77,9 +98,9 @@ class App extends React.Component {
     return (
       <div className="App">
         <header>
-          <Header currencies={ this.availableCurrencies() } changeHandler={ this.setCurrency } />
         </header>
         { this.transactionChart() }
+        <Header currencies={ this.availableCurrencies() } changeHandler={ this.setCurrency } />
         { this.transactionsList() }
       </div>
     );
